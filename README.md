@@ -3,7 +3,7 @@
 > A seamless and elegant digital library management system designed to digitize the traditional library experience. Users can explore various books, filter by categories, authenticate securely, and borrow books digitally with a premium, classic warm ivory and forest green editorial user interface.
 
 ## 🌐 Live URL
-[https://read-sphere-digital.vercel.app](https://read-sphere-digital.vercel.app)
+[Insert your Netlify Live Link Here](https://your-netlify-app-name.netlify.app)
 
 ## ✨ Key Features
 - **Premium Editorial UI/UX**: Warm paper/ivory background paired with deep stone typography and rich forest green brand indicators.
