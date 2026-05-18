@@ -1,0 +1,144 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { authClient } from "@/lib/auth-client";
+import toast from "react-hot-toast";
+import { Mail, Lock, LogIn, Globe } from "lucide-react";
+
+export default function Login() {
+  const router = useRouter();
+  
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const { error } = await authClient.signIn.email({
+        email,
+        password,
+      });
+
+      if (error) {
+        throw new Error(error.message || "Failed to log in");
+      }
+
+      toast.success("Welcome back!");
+      router.push("/");
+    } catch (err) {
+      toast.error(err.message || "An unexpected error occurred.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      await authClient.signIn.social({
+        provider: "google",
+        callbackURL: "/",
+      });
+    } catch (err) {
+      toast.error("Failed to login with Google.");
+    }
+  };
+
+  return (
+    <div className="container mx-auto px-6 py-20 flex justify-center items-center">
+      <div className="bg-white border border-stone-200 p-8 md:p-12 rounded-2xl w-full max-w-md shadow-sm space-y-8">
+        <div className="text-center">
+          <h2 className="text-3xl font-extrabold text-stone-900 tracking-tight">
+            Welcome <span className="text-[#1e3f20]">Back</span>
+          </h2>
+          <p className="mt-2 text-sm text-stone-500">
+            Log in to manage your digital library bookshelf.
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="space-y-4">
+            {/* Email */}
+            <div>
+              <label className="text-xs font-bold text-stone-500 uppercase tracking-wider block mb-2">Email Address</label>
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-stone-400">
+                  <Mail size={18} />
+                </span>
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="name@example.com"
+                  className="bg-white border border-stone-200 text-stone-900 pl-10 pr-4 py-3.5 rounded-xl w-full text-sm focus:outline-none focus:border-[#1e3f20] focus:ring-1 focus:ring-[#1e3f20]"
+                />
+              </div>
+            </div>
+
+            {/* Password */}
+            <div>
+              <label className="text-xs font-bold text-stone-500 uppercase tracking-wider block mb-2">Password</label>
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-stone-400">
+                  <Lock size={18} />
+                </span>
+                <input
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="bg-white border border-stone-200 text-stone-900 pl-10 pr-4 py-3.5 rounded-xl w-full text-sm focus:outline-none focus:border-[#1e3f20] focus:ring-1 focus:ring-[#1e3f20]"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full flex justify-center py-3.5 px-4 text-sm font-semibold rounded-xl text-white bg-[#1e3f20] hover:bg-[#1e3f20]/95 transition-all disabled:opacity-50 shadow-sm cursor-pointer"
+            >
+              {loading ? (
+                <span className="loading loading-spinner loading-sm"></span>
+              ) : (
+                <>
+                  <LogIn className="mr-2 w-4.5 h-4.5" />
+                  Sign In
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+
+        <div className="relative my-6 flex items-center justify-center">
+          <div className="border-t border-stone-200 w-full absolute"></div>
+          <span className="bg-white px-3 text-xs text-stone-400 uppercase tracking-widest font-bold z-10">Or connect with</span>
+        </div>
+
+        <div>
+          <button
+            onClick={handleGoogleLogin}
+            className="w-full py-3.5 px-4 border border-stone-200 rounded-xl bg-stone-50 text-stone-700 hover:bg-stone-100 flex items-center justify-center gap-2 text-sm font-semibold transition-all shadow-sm cursor-pointer"
+          >
+            <Globe className="w-4 h-4 text-stone-500" />
+            Continue with Google
+          </button>
+        </div>
+
+        <p className="text-center text-xs text-stone-500 font-medium">
+          Don't have an account?{" "}
+          <Link href="/register" className="text-[#1e3f20] font-bold hover:underline">
+            Register for Free
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
+}
